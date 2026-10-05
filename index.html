@@ -1,0 +1,260 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 16px;
+}
+
+.simulation-container {
+  position: relative;
+  width: 100%;
+  max-width: 1040px;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.play-trigger {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s ease;
+}
+
+.play-trigger:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.play-icon-box {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.65);
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.play-trigger:hover .play-icon-box {
+  transform: scale(1.08);
+}
+
+.play-icon {
+  width: 0;
+  height: 0;
+  border-top: 14px solid transparent;
+  border-bottom: 14px solid transparent;
+  border-left: 24px solid #ffffff;
+  margin-left: 6px;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: none;
+  z-index: 20;
+}
+
+.overlay.active {
+  display: flex;
+}
+
+#options-overlay {
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(2px);
+  align-items: flex-end;
+  padding: 24px;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  width: 100%;
+  max-width: 990px;
+  margin: 0 auto;
+}
+
+.option-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 16px 18px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 120px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+}
+
+.option-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  background: #ffffff;
+}
+
+.option-arrow {
+  align-self: flex-end;
+  width: 28px;
+  height: 28px;
+  background: #1e293b;
+  color: #ffffff;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  margin-top: 10px;
+  transition: background 0.15s ease;
+}
+
+.option-card:hover .option-arrow {
+  background: var(--primary);
+}
+
+#feedback-overlay {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.feedback-dialog {
+  background: var(--card-bg);
+  border-radius: 8px;
+  border: 1px solid var(--card-border);
+  padding: 28px;
+  max-width: 580px;
+  width: 100%;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.feedback-narrative {
+  font-size: 15px;
+  line-height: 1.55;
+  color: #1e293b;
+}
+
+.feedback-speech {
+  font-style: italic;
+  color: #0f172a;
+  font-weight: 500;
+  border-left: 3px solid var(--accent);
+  padding-left: 14px;
+}
+
+.dialog-action {
+  align-self: flex-end;
+  background: #1e293b;
+  color: #ffffff;
+  border: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: background 0.15s ease;
+}
+
+.dialog-action:hover {
+  background: var(--primary);
+}
+
+@media (max-width: 768px) {
+  .simulation-container {
+    aspect-ratio: auto;
+    min-height: 560px;
+  }
+
+  .options-grid {
+    grid-template-columns: 1fr;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+}
+
+
+<div id="play-trigger" class="play-trigger">
+  <div class="play-icon-box">
+    <div class="play-icon"></div>
+  </div>
+</div>
+
+<div id="options-overlay" class="overlay">
+  <div class="options-grid">
+    <div class="option-card" onclick="handleChoice('waiting_room')">
+      <p>"Oh no... that's terrible. I'm so sorry. I'll check the system right now, please don't be angry, I'm sure we can find out what happened."</p>
+      <div class="option-arrow">&#10140;</div>
+    </div>
+
+    <div class="option-card" onclick="handleChoice('waiting_room')">
+      <p>"I don't handle referrals, that's the admin team. You will need to call back between 2 PM and 4 PM when they are in. I have a queue of patients behind you."</p>
+      <div class="option-arrow">&#10140;</div>
+    </div>
+
+    <div class="option-card" onclick="handleChoice('waiting_room')">
+      <p>"I'll fix this right now. I'll get the manager to call the hospital directly and demand they see you tomorrow. Just give me a second."</p>
+      <div class="option-arrow">&#10140;</div>
+    </div>
+
+    <div class="option-card" onclick="handleChoice('waiting_room')">
+      <p>"Mr. Vance, I cannot show you the internal clinical system. If there is a missing referral, I will have to ask the GP to look into it. This can take up to 48 hours."</p>
+      <div class="option-arrow">&#10140;</div>
+    </div>
+
+    <div class="option-card" onclick="handleChoice('side_room')">
+      <p>"Mr. Vance, that is incredibly distressing to hear, especially given the nature of the scan. I can't show you the screen due to other patient data, but I am going to investigate this right now while you wait. Can we use the side room so I can get the full details from you?"</p>
+      <div class="option-arrow">&#10140;</div>
+    </div>
+  </div>
+</div>
+
+<div id="feedback-overlay" class="overlay">
+  <div class="feedback-dialog">
+    <p class="feedback-narrative" id="narrative-text"></p>
+    <p class="feedback-speech" id="speech-text"></p>
+    <button class="dialog-action" onclick="resetScenario()" aria-label="Next step">&#10140;</button>
+  </div>
+</div>
