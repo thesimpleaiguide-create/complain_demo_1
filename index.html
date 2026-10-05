@@ -8,12 +8,15 @@
     :root {
       --primary: #005eb8;
       --primary-dark: #003087;
-      --accent: #d97706;
+      --surface: #ffffff;
+      --bg: #0f172a;
+      --card-bg: rgba(255, 255, 255, 0.94);
+      --card-border: #e2e8f0;
       --text: #1e293b;
-      --text-muted: #64748b;
-      --card-bg: rgba(255, 255, 255, 0.96);
-      --card-border: rgba(226, 232, 240, 0.9);
-      --card-shadow: 0 8px 20px -3px rgba(0, 0, 0, 0.35), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+      --text-muted: #475569;
+      --accent: #d97706;
+      --radius: 12px;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
     }
 
     * {
@@ -24,7 +27,7 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background-color: #0b1120;
+      background-color: var(--bg);
       color: var(--text);
       display: flex;
       justify-content: center;
@@ -33,88 +36,40 @@
       padding: 16px;
     }
 
-    .simulation-wrapper {
+    .simulation-container {
       position: relative;
       width: 100%;
-      max-width: 1060px;
+      max-width: 1040px;
       aspect-ratio: 16 / 9;
-      background-color: #020617;
-      border-radius: 12px;
+      background: #000;
+      border-radius: var(--radius);
       overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      box-shadow: var(--shadow);
     }
 
-    /* Video player */
     video {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      background-color: #000;
     }
 
-    /* Initial Play Overlay */
-    .play-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.35);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 10;
-      transition: background 0.2s ease;
-    }
-
-    .play-overlay:hover {
-      background: rgba(0, 0, 0, 0.15);
-    }
-
-    .play-button {
-      width: 76px;
-      height: 76px;
-      border-radius: 50%;
-      background: rgba(15, 23, 42, 0.75);
-      border: 2px solid rgba(255, 255, 255, 0.9);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.2s ease, background 0.2s ease;
-    }
-
-    .play-overlay:hover .play-button {
-      transform: scale(1.08);
-      background: rgba(0, 94, 184, 0.85);
-    }
-
-    .play-triangle {
-      width: 0;
-      height: 0;
-      border-top: 13px solid transparent;
-      border-bottom: 13px solid transparent;
-      border-left: 22px solid #ffffff;
-      margin-left: 5px;
-    }
-
-    /* Overlay Screens */
-    .overlay-screen {
+    .overlay {
       position: absolute;
       inset: 0;
       display: none;
       z-index: 20;
     }
 
-    .overlay-screen.active {
+    .overlay.active {
       display: flex;
     }
 
-    /* Options Phase Overlay - Positioned strictly on the right side to keep Mr Vance's face clear */
     #options-overlay {
-      background: linear-gradient(to right, transparent 0%, rgba(15, 23, 42, 0.25) 45%, rgba(15, 23, 42, 0.65) 100%);
-      justify-content: flex-end;
-      align-items: center;
-      padding: 20px 28px;
+      background: linear-gradient(to left, rgba(15, 23, 42, 0.7) 0%, rgba(15, 23, 42, 0.1) 60%, transparent 100%);
+      align-items: center; 
+      padding: 24px;
     }
 
     .options-column {
@@ -122,9 +77,8 @@
       flex-direction: column;
       gap: 10px;
       width: 100%;
-      max-width: 520px;
-      max-height: 94%;
-      justify-content: center;
+      max-width: 520px; 
+      margin-left: auto; /* Pushes the column to the right */
     }
 
     .option-card {
@@ -132,7 +86,7 @@
       border: 1px solid var(--card-border);
       border-radius: 8px;
       padding: 10px 14px;
-      font-size: 13px;
+      font-size: 13.5px;
       line-height: 1.4;
       color: var(--text);
       cursor: pointer;
@@ -140,16 +94,9 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      box-shadow: var(--card-shadow);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-      backdrop-filter: blur(6px);
-    }
-
-    .option-card:hover {
-      transform: translateX(-4px);
-      border-color: var(--primary);
-      background: #ffffff;
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
     }
 
     .option-card p {
@@ -157,7 +104,14 @@
       margin: 0;
     }
 
-    .option-action {
+    .option-card:hover {
+      transform: translateX(-4px); 
+      border-color: var(--primary);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+      background: #ffffff;
+    }
+
+    .option-arrow {
       flex-shrink: 0;
       width: 26px;
       height: 26px;
@@ -171,51 +125,36 @@
       transition: background 0.15s ease;
     }
 
-    .option-card:hover .option-action {
+    .option-card:hover .option-arrow {
       background: var(--primary);
     }
 
-    /* Feedback Overlay */
     #feedback-overlay {
-      background-color: rgba(15, 23, 42, 0.5);
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      align-items: flex-end;
-      justify-content: flex-start;
-      padding: 32px;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
     }
 
-    .feedback-box {
+    .feedback-dialog {
       background: var(--card-bg);
-      border-radius: 10px;
+      border-radius: 8px;
       border: 1px solid var(--card-border);
-      padding: 22px 24px;
-      max-width: 560px;
+      padding: 28px;
+      max-width: 580px;
       width: 100%;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      animation: fadeIn 0.25s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      gap: 16px;
     }
 
     .feedback-narrative {
-      font-size: 14.5px;
-      line-height: 1.5;
+      font-size: 15px;
+      line-height: 1.55;
       color: #1e293b;
-      white-space: pre-line;
     }
 
     .feedback-speech {
@@ -223,176 +162,205 @@
       color: #0f172a;
       font-weight: 500;
       border-left: 3px solid var(--accent);
-      padding-left: 12px;
-      line-height: 1.45;
-      font-size: 14px;
+      padding-left: 14px;
     }
 
-    .feedback-restart-btn {
+    .dialog-action {
       align-self: flex-end;
       background: #1e293b;
       color: #ffffff;
       border: none;
-      width: 34px;
-      height: 34px;
+      width: 38px;
+      height: 38px;
       border-radius: 6px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 15px;
-      transition: background 0.15s ease, transform 0.15s ease;
+      font-size: 18px;
+      transition: background 0.15s ease;
     }
 
-    .feedback-restart-btn:hover {
+    .dialog-action:hover {
       background: var(--primary);
-      transform: scale(1.06);
+    }
+    
+    /* Play button overlay in case autoplay is blocked */
+    #autoplay-fallback {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+      cursor: pointer;
+    }
+    
+    #autoplay-fallback.active {
+      display: flex;
     }
 
-    /* Mobile / Small Screens adjustments */
-    @media (max-width: 820px) {
-      .simulation-wrapper {
+    .play-icon-box {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.65);
+      border: 2px solid rgba(255, 255, 255, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+    }
+
+    #autoplay-fallback:hover .play-icon-box {
+      transform: scale(1.08);
+    }
+
+    .play-icon {
+      width: 0;
+      height: 0;
+      border-top: 14px solid transparent;
+      border-bottom: 14px solid transparent;
+      border-left: 24px solid #ffffff;
+      margin-left: 6px;
+    }
+
+    @media (max-width: 768px) {
+      .simulation-container {
         aspect-ratio: auto;
-        min-height: 600px;
+        min-height: 560px;
       }
 
       #options-overlay {
-        align-items: flex-end;
-        justify-content: center;
-        padding: 16px;
+        background: rgba(15, 23, 42, 0.6);
       }
 
       .options-column {
-        max-width: 100%;
+        margin-left: 0;
         max-height: 80vh;
         overflow-y: auto;
-      }
-
-      #feedback-overlay {
-        padding: 16px;
-        align-items: center;
-        justify-content: center;
       }
     }
   </style>
 </head>
 <body>
 
-  <div class="simulation-wrapper">
-    <!-- Main scenario video -->
-    <video id="simulation-video" playsinline preload="auto">
+  <div class="simulation-container">
+    <video id="scenario-video" playsinline preload="auto" autoplay>
       <source src="complaining_1.mp4" type="video/mp4" />
       Your browser does not support HTML5 video.
     </video>
 
-    <!-- Play button overlay -->
-    <div id="play-overlay" class="play-overlay">
-      <div class="play-button" aria-label="Start simulation">
-        <div class="play-triangle"></div>
+    <!-- Fallback play button if autoplay is blocked by the browser -->
+    <div id="autoplay-fallback" aria-label="Play Video">
+      <div class="play-icon-box">
+        <div class="play-icon"></div>
       </div>
     </div>
 
-    <!-- Branching choice options (docked on the right side) -->
-    <div id="options-overlay" class="overlay-screen">
+    <!-- Right-aligned options menu -->
+    <div id="options-overlay" class="overlay">
       <div class="options-column">
-        <div class="option-card" onclick="handleChoice('apologetic')">
+        <div class="option-card" onclick="handleChoice('waiting_room')">
           <p>"Oh no... that's terrible. I'm so sorry. I'll check the system right now, please don't be angry, I'm sure we can find out what happened."</p>
-          <div class="option-action">&#10140;</div>
+          <div class="option-arrow">&#10140;</div>
         </div>
 
-        <div class="option-card" onclick="handleChoice('dismissive')">
+        <div class="option-card" onclick="handleChoice('waiting_room')">
           <p>"I don't handle referrals, that's the admin team. You will need to call back between 2 PM and 4 PM when they are in. I have a queue of patients behind you."</p>
-          <div class="option-action">&#10140;</div>
+          <div class="option-arrow">&#10140;</div>
         </div>
 
-        <div class="option-card" onclick="handleChoice('overpromising')">
+        <div class="option-card" onclick="handleChoice('waiting_room')">
           <p>"I'll fix this right now. I'll get the manager to call the hospital directly and demand they see you tomorrow. Just give me a second."</p>
-          <div class="option-action">&#10140;</div>
+          <div class="option-arrow">&#10140;</div>
         </div>
 
-        <div class="option-card" onclick="handleChoice('procedural')">
+        <div class="option-card" onclick="handleChoice('waiting_room')">
           <p>"Mr. Vance, I cannot show you the internal clinical system. If there is a missing referral, I will have to ask the GP to look into it. This can take up to 48 hours."</p>
-          <div class="option-action">&#10140;</div>
+          <div class="option-arrow">&#10140;</div>
         </div>
 
-        <div class="option-card" onclick="handleChoice('deescalate')">
+        <div class="option-card" onclick="handleChoice('side_room')">
           <p>"Mr. Vance, that is incredibly distressing to hear, especially given the nature of the scan. I can't show you the screen due to other patient data, but I am going to investigate this right now while you wait. Can we use the side room so I can get the full details from you?"</p>
-          <div class="option-action">&#10140;</div>
+          <div class="option-arrow">&#10140;</div>
         </div>
       </div>
     </div>
 
-    <!-- Consequence feedback box -->
-    <div id="feedback-overlay" class="overlay-screen">
-      <div class="feedback-box">
+    <div id="feedback-overlay" class="overlay">
+      <div class="feedback-dialog">
         <p class="feedback-narrative" id="narrative-text"></p>
         <p class="feedback-speech" id="speech-text"></p>
-        <button class="feedback-restart-btn" onclick="restartSimulation()" title="Try again" aria-label="Restart simulation">&#10140;</button>
+        <button class="dialog-action" onclick="resetScenario()" aria-label="Next step">&#10140;</button>
       </div>
     </div>
   </div>
 
   <script>
-    const video = document.getElementById('simulation-video');
-    const playOverlay = document.getElementById('play-overlay');
+    const video = document.getElementById('scenario-video');
     const optionsOverlay = document.getElementById('options-overlay');
     const feedbackOverlay = document.getElementById('feedback-overlay');
     const narrativeText = document.getElementById('narrative-text');
     const speechText = document.getElementById('speech-text');
+    const fallbackPlayBtn = document.getElementById('autoplay-fallback');
 
-    const feedbackScenarios = {
-      dismissive: {
-        narrative: "By asking Mr Vance to wait, you have turned a private clinical error into a public ordeal. He is not going to sit down quietly.\n\nHe turns to the waiting room:",
-        speech: '"Did you hear that? They lost my cancer referral and told me to call back this afternoon. Does this happen to you too?"'
-      },
-      apologetic: {
-        narrative: "Apologising defensively and asking an agitated patient 'not to be angry' often invalidates their genuine terror. Mr Vance raises his voice further over the counter:",
-        speech: '"Don\'t tell me not to be angry! Four months of my life wasted! Stop talking and show me that screen!"'
-      },
-      overpromising: {
-        narrative: "Making guarantees you cannot control sets up false expectations and damages practice credibility when the hospital cannot deliver:",
-        speech: '"Tomorrow? You better make sure they do! I am not leaving this reception until I have written confirmation!"'
-      },
-      procedural: {
-        narrative: "Quoting a 48-hour administrative turnaround for an urgent potential cancer referral escalates anxiety into complete outrage:",
-        speech: '"48 hours?! It could be cancer and you\'re asking me to wait two more days for paperwork?!"'
-      },
-      deescalate: {
-        narrative: "You acknowledged the severe distress, maintained data confidentiality without sounding dismissive, and moved the conversation to a private space to remove the audience.",
-        speech: '"Thank you. Let\'s go into the side room. I just need to know what on earth happened to my scan."'
+    // Attempt to play the video on load
+    // Browsers often block autoplay if unmuted, so we catch the error
+    window.addEventListener('load', () => {
+      const playPromise = video.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.then(_ => {
+          // Autoplay started successfully
+        }).catch(error => {
+          // Autoplay was prevented by the browser. Show fallback play button.
+          console.log("Autoplay blocked. Showing play button.");
+          fallbackPlayBtn.classList.add('active');
+        });
       }
-    };
-
-    // User clicks the initial play button
-    playOverlay.addEventListener('click', () => {
-      playOverlay.style.display = 'none';
-      video.play().catch(err => {
-        console.error("Playback error:", err);
-      });
     });
 
-    // When the clip ends, display the choice cards
+    // Handle manual play if autoplay failed
+    fallbackPlayBtn.addEventListener('click', () => {
+      video.play();
+      fallbackPlayBtn.classList.remove('active');
+    });
+
     video.addEventListener('ended', () => {
       optionsOverlay.classList.add('active');
     });
 
-    // Handle choice selection
-    function handleChoice(key) {
+    function handleChoice(outcomeKey) {
       optionsOverlay.classList.remove('active');
 
-      const outcome = feedbackScenarios[key] || feedbackScenarios.dismissive;
-      narrativeText.textContent = outcome.narrative;
-      speechText.textContent = outcome.speech;
+      if (outcomeKey === 'waiting_room') {
+        // NOTE: Make sure vance-outburst-bg.jpg is available in the repo if you plan to use this background
+        feedbackOverlay.style.backgroundImage = "url('vance-outburst-bg.jpg')";
+        narrativeText.textContent = "By asking Mr Vance to wait, you have turned a private clinical error into a public ordeal. He is not going to sit down quietly. He turns to the waiting room:";
+        speechText.textContent = '"Did you hear that? They lost my cancer referral and told me to call back this afternoon. Does this happen to you too?"';
+      } else {
+        feedbackOverlay.style.backgroundImage = "url('vance-outburst-bg.jpg')";
+        narrativeText.textContent = "You acknowledge the distress immediately, uphold confidentiality without being dismissive, and offer a private room to de-escalate the public confrontation.";
+        speechText.textContent = '"Thank you. Let us get off this counter. I just need to know what on earth happened to my scan."';
+      }
 
       feedbackOverlay.classList.add('active');
     }
 
-    // Reset simulation
-    function restartSimulation() {
+    function resetScenario() {
       feedbackOverlay.classList.remove('active');
       optionsOverlay.classList.remove('active');
       video.currentTime = 0;
-      playOverlay.style.display = 'flex';
+      
+      // Try to autoplay again on restart
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+           fallbackPlayBtn.classList.add('active');
+        });
+      }
     }
   </script>
 </body>
