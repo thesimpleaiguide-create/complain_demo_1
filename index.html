@@ -6,7 +6,7 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background-color: var(--bg);
+  background-color: #0b1120;
   color: var(--text);
   display: flex;
   justify-content: center;
@@ -15,29 +15,32 @@ body {
   padding: 16px;
 }
 
-.simulation-container {
+.simulation-wrapper {
   position: relative;
   width: 100%;
-  max-width: 1040px;
+  max-width: 1060px;
   aspect-ratio: 16 / 9;
-  background: #000;
-  border-radius: var(--radius);
+  background-color: #020617;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: var(--shadow);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
 }
 
+/* Video player */
 video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  background-color: #000;
 }
 
-.play-trigger {
+/* Initial Play Overlay */
+.play-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -46,131 +49,162 @@ video {
   transition: background 0.2s ease;
 }
 
-.play-trigger:hover {
+.play-overlay:hover {
   background: rgba(0, 0, 0, 0.15);
 }
 
-.play-icon-box {
-  width: 80px;
-  height: 80px;
+.play-button {
+  width: 76px;
+  height: 76px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.65);
-  border: 2px solid rgba(255, 255, 255, 0.85);
+  background: rgba(15, 23, 42, 0.75);
+  border: 2px solid rgba(255, 255, 255, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, background 0.2s ease;
 }
 
-.play-trigger:hover .play-icon-box {
+.play-overlay:hover .play-button {
   transform: scale(1.08);
+  background: rgba(0, 94, 184, 0.85);
 }
 
-.play-icon {
+.play-triangle {
   width: 0;
   height: 0;
-  border-top: 14px solid transparent;
-  border-bottom: 14px solid transparent;
-  border-left: 24px solid #ffffff;
-  margin-left: 6px;
+  border-top: 13px solid transparent;
+  border-bottom: 13px solid transparent;
+  border-left: 22px solid #ffffff;
+  margin-left: 5px;
 }
 
-.overlay {
+/* General Overlay State */
+.overlay-screen {
   position: absolute;
   inset: 0;
   display: none;
   z-index: 20;
 }
 
-.overlay.active {
+.overlay-screen.active {
   display: flex;
 }
 
+/* Options Phase Overlay */
 #options-overlay {
-  background: rgba(15, 23, 42, 0.35);
-  backdrop-filter: blur(2px);
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.75) 0%, rgba(15, 23, 42, 0.2) 60%, transparent 100%);
   align-items: flex-end;
   padding: 24px;
 }
 
 .options-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
   width: 100%;
-  max-width: 990px;
+  max-width: 1000px;
   margin: 0 auto;
+}
+
+/* 2 on top row, 3 on bottom row */
+.option-card:nth-child(1),
+.option-card:nth-child(2) {
+  grid-column: span 3;
+}
+
+.option-card:nth-child(3),
+.option-card:nth-child(4),
+.option-card:nth-child(5) {
+  grid-column: span 2;
 }
 
 .option-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: 8px;
-  padding: 16px 18px;
-  font-size: 14px;
+  padding: 14px 16px;
+  font-size: 13.5px;
   line-height: 1.45;
   color: var(--text);
   cursor: pointer;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 120px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-  position: relative;
+  min-height: 110px;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  backdrop-filter: blur(4px);
 }
 
 .option-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   border-color: var(--primary);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
   background: #ffffff;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
 }
 
-.option-arrow {
+.option-card p {
+  margin-bottom: 8px;
+}
+
+.option-action {
   align-self: flex-end;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   background: #1e293b;
   color: #ffffff;
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  margin-top: 10px;
+  font-size: 13px;
   transition: background 0.15s ease;
 }
 
-.option-card:hover .option-arrow {
+.option-card:hover .option-action {
   background: var(--primary);
 }
 
+/* Feedback Overlay */
 #feedback-overlay {
+  background-color: rgba(15, 23, 42, 0.6);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 32px;
 }
 
-.feedback-dialog {
+.feedback-box {
   background: var(--card-bg);
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid var(--card-border);
-  padding: 28px;
+  padding: 24px;
   max-width: 580px;
   width: 100%;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
+  animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .feedback-narrative {
   font-size: 15px;
-  line-height: 1.55;
+  line-height: 1.5;
   color: #1e293b;
 }
 
@@ -179,82 +213,103 @@ video {
   color: #0f172a;
   font-weight: 500;
   border-left: 3px solid var(--accent);
-  padding-left: 14px;
+  padding-left: 12px;
+  line-height: 1.45;
 }
 
-.dialog-action {
+.feedback-restart-btn {
   align-self: flex-end;
   background: #1e293b;
   color: #ffffff;
   border: none;
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border-radius: 6px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  transition: background 0.15s ease;
+  font-size: 16px;
+  transition: background 0.15s ease, transform 0.15s ease;
 }
 
-.dialog-action:hover {
+.feedback-restart-btn:hover {
   background: var(--primary);
+  transform: scale(1.06);
 }
 
-@media (max-width: 768px) {
-  .simulation-container {
+/* Mobile Responsiveness */
+@media (max-width: 820px) {
+  .simulation-wrapper {
     aspect-ratio: auto;
-    min-height: 560px;
+    min-height: 600px;
   }
 
   .options-grid {
     grid-template-columns: 1fr;
     max-height: 80vh;
     overflow-y: auto;
+    padding-top: 20px;
+  }
+
+  .option-card:nth-child(1),
+  .option-card:nth-child(2),
+  .option-card:nth-child(3),
+  .option-card:nth-child(4),
+  .option-card:nth-child(5) {
+    grid-column: span 1;
+  }
+
+  #feedback-overlay {
+    padding: 16px;
+    align-items: center;
+    justify-content: center;
   }
 }
 
 
-<div id="play-trigger" class="play-trigger">
-  <div class="play-icon-box">
-    <div class="play-icon"></div>
+<!-- Initial Play Trigger -->
+<div id="play-overlay" class="play-overlay">
+  <div class="play-button" aria-label="Start simulation">
+    <div class="play-triangle"></div>
   </div>
 </div>
 
-<div id="options-overlay" class="overlay">
+<!-- Branching Choice Options Overlay -->
+<div id="options-overlay" class="overlay-screen">
   <div class="options-grid">
-    <div class="option-card" onclick="handleChoice('waiting_room')">
+    <div class="option-card" onclick="handleChoice('apologetic')">
       <p>"Oh no... that's terrible. I'm so sorry. I'll check the system right now, please don't be angry, I'm sure we can find out what happened."</p>
-      <div class="option-arrow">&#10140;</div>
+      <div class="option-action">&#10140;</div>
     </div>
 
-    <div class="option-card" onclick="handleChoice('waiting_room')">
+    <div class="option-card" onclick="handleChoice('dismissive')">
       <p>"I don't handle referrals, that's the admin team. You will need to call back between 2 PM and 4 PM when they are in. I have a queue of patients behind you."</p>
-      <div class="option-arrow">&#10140;</div>
+      <div class="option-action">&#10140;</div>
     </div>
 
-    <div class="option-card" onclick="handleChoice('waiting_room')">
+    <div class="option-card" onclick="handleChoice('overpromising')">
       <p>"I'll fix this right now. I'll get the manager to call the hospital directly and demand they see you tomorrow. Just give me a second."</p>
-      <div class="option-arrow">&#10140;</div>
+      <div class="option-action">&#10140;</div>
     </div>
 
-    <div class="option-card" onclick="handleChoice('waiting_room')">
+    <div class="option-card" onclick="handleChoice('procedural')">
       <p>"Mr. Vance, I cannot show you the internal clinical system. If there is a missing referral, I will have to ask the GP to look into it. This can take up to 48 hours."</p>
-      <div class="option-arrow">&#10140;</div>
+      <div class="option-action">&#10140;</div>
     </div>
 
-    <div class="option-card" onclick="handleChoice('side_room')">
+    <div class="option-card" onclick="handleChoice('deescalate')">
       <p>"Mr. Vance, that is incredibly distressing to hear, especially given the nature of the scan. I can't show you the screen due to other patient data, but I am going to investigate this right now while you wait. Can we use the side room so I can get the full details from you?"</p>
-      <div class="option-arrow">&#10140;</div>
+      <div class="option-action">&#10140;</div>
     </div>
   </div>
 </div>
 
-<div id="feedback-overlay" class="overlay">
-  <div class="feedback-dialog">
+<!-- Feedback / Consequence Overlay -->
+<div id="feedback-overlay" class="overlay-screen">
+  <div class="feedback-box">
     <p class="feedback-narrative" id="narrative-text"></p>
     <p class="feedback-speech" id="speech-text"></p>
-    <button class="dialog-action" onclick="resetScenario()" aria-label="Next step">&#10140;</button>
+    <button class="feedback-restart-btn" onclick="restartSimulation()" title="Try again" aria-label="Restart simulation">&#10140;</button>
   </div>
 </div>
