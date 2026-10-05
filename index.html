@@ -1,315 +1,411 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>De-escalation Simulation - GP Reception</title>
+  <style>
+    :root {
+      --primary: #005eb8;
+      --primary-dark: #003087;
+      --accent: #d97706;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --card-bg: rgba(255, 255, 255, 0.96);
+      --card-border: rgba(226, 232, 240, 0.9);
+      --card-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.25), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+    }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background-color: #0b1120;
-  color: var(--text);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 16px;
-}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-.simulation-wrapper {
-  position: relative;
-  width: 100%;
-  max-width: 1060px;
-  aspect-ratio: 16 / 9;
-  background-color: #020617;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-}
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #0b1120;
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
 
-/* Video player */
-video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  background-color: #000;
-}
+    .simulation-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 1060px;
+      aspect-ratio: 16 / 9;
+      background-color: #020617;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    }
 
-/* Initial Play Overlay */
-.play-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 10;
-  transition: background 0.2s ease;
-}
+    /* Video player */
+    video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background-color: #000;
+    }
 
-.play-overlay:hover {
-  background: rgba(0, 0, 0, 0.15);
-}
+    /* Initial Play Overlay */
+    .play-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: background 0.2s ease;
+    }
 
-.play-button {
-  width: 76px;
-  height: 76px;
-  border-radius: 50%;
-  background: rgba(15, 23, 42, 0.75);
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease, background 0.2s ease;
-}
+    .play-overlay:hover {
+      background: rgba(0, 0, 0, 0.15);
+    }
 
-.play-overlay:hover .play-button {
-  transform: scale(1.08);
-  background: rgba(0, 94, 184, 0.85);
-}
+    .play-button {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: rgba(15, 23, 42, 0.75);
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
 
-.play-triangle {
-  width: 0;
-  height: 0;
-  border-top: 13px solid transparent;
-  border-bottom: 13px solid transparent;
-  border-left: 22px solid #ffffff;
-  margin-left: 5px;
-}
+    .play-overlay:hover .play-button {
+      transform: scale(1.08);
+      background: rgba(0, 94, 184, 0.85);
+    }
 
-/* General Overlay State */
-.overlay-screen {
-  position: absolute;
-  inset: 0;
-  display: none;
-  z-index: 20;
-}
+    .play-triangle {
+      width: 0;
+      height: 0;
+      border-top: 13px solid transparent;
+      border-bottom: 13px solid transparent;
+      border-left: 22px solid #ffffff;
+      margin-left: 5px;
+    }
 
-.overlay-screen.active {
-  display: flex;
-}
+    /* Overlay Screens */
+    .overlay-screen {
+      position: absolute;
+      inset: 0;
+      display: none;
+      z-index: 20;
+    }
 
-/* Options Phase Overlay */
-#options-overlay {
-  background: linear-gradient(to top, rgba(15, 23, 42, 0.75) 0%, rgba(15, 23, 42, 0.2) 60%, transparent 100%);
-  align-items: flex-end;
-  padding: 24px;
-}
+    .overlay-screen.active {
+      display: flex;
+    }
 
-.options-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 12px;
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-}
+    /* Options Phase Overlay */
+    #options-overlay {
+      background: linear-gradient(to top, rgba(15, 23, 42, 0.75) 0%, rgba(15, 23, 42, 0.2) 60%, transparent 100%);
+      align-items: flex-end;
+      padding: 24px;
+    }
 
-/* 2 on top row, 3 on bottom row */
-.option-card:nth-child(1),
-.option-card:nth-child(2) {
-  grid-column: span 3;
-}
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
 
-.option-card:nth-child(3),
-.option-card:nth-child(4),
-.option-card:nth-child(5) {
-  grid-column: span 2;
-}
+    /* Top row: 2 cards */
+    .option-card:nth-child(1),
+    .option-card:nth-child(2) {
+      grid-column: span 3;
+    }
 
-.option-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 8px;
-  padding: 14px 16px;
-  font-size: 13.5px;
-  line-height: 1.45;
-  color: var(--text);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 110px;
-  box-shadow: var(--card-shadow);
-  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-  backdrop-filter: blur(4px);
-}
+    /* Bottom row: 3 cards */
+    .option-card:nth-child(3),
+    .option-card:nth-child(4),
+    .option-card:nth-child(5) {
+      grid-column: span 2;
+    }
 
-.option-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--primary);
-  background: #ffffff;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
-}
+    .option-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 13.5px;
+      line-height: 1.45;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 110px;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      backdrop-filter: blur(4px);
+    }
 
-.option-card p {
-  margin-bottom: 8px;
-}
+    .option-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--primary);
+      background: #ffffff;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
 
-.option-action {
-  align-self: flex-end;
-  width: 26px;
-  height: 26px;
-  background: #1e293b;
-  color: #ffffff;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  transition: background 0.15s ease;
-}
+    .option-card p {
+      margin-bottom: 8px;
+    }
 
-.option-card:hover .option-action {
-  background: var(--primary);
-}
+    .option-action {
+      align-self: flex-end;
+      width: 26px;
+      height: 26px;
+      background: #1e293b;
+      color: #ffffff;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      transition: background 0.15s ease;
+    }
 
-/* Feedback Overlay */
-#feedback-overlay {
-  background-color: rgba(15, 23, 42, 0.6);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  align-items: flex-end;
-  justify-content: flex-start;
-  padding: 32px;
-}
+    .option-card:hover .option-action {
+      background: var(--primary);
+    }
 
-.feedback-box {
-  background: var(--card-bg);
-  border-radius: 10px;
-  border: 1px solid var(--card-border);
-  padding: 24px;
-  max-width: 580px;
-  width: 100%;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  animation: fadeIn 0.25s ease-out;
-}
+    /* Feedback Overlay */
+    #feedback-overlay {
+      background-color: rgba(15, 23, 42, 0.5);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      align-items: flex-end;
+      justify-content: flex-start;
+      padding: 32px;
+    }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+    .feedback-box {
+      background: var(--card-bg);
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      padding: 24px;
+      max-width: 580px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      animation: fadeIn 0.25s ease-out;
+    }
 
-.feedback-narrative {
-  font-size: 15px;
-  line-height: 1.5;
-  color: #1e293b;
-}
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-.feedback-speech {
-  font-style: italic;
-  color: #0f172a;
-  font-weight: 500;
-  border-left: 3px solid var(--accent);
-  padding-left: 12px;
-  line-height: 1.45;
-}
+    .feedback-narrative {
+      font-size: 15px;
+      line-height: 1.5;
+      color: #1e293b;
+      white-space: pre-line;
+    }
 
-.feedback-restart-btn {
-  align-self: flex-end;
-  background: #1e293b;
-  color: #ffffff;
-  border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  transition: background 0.15s ease, transform 0.15s ease;
-}
+    .feedback-speech {
+      font-style: italic;
+      color: #0f172a;
+      font-weight: 500;
+      border-left: 3px solid var(--accent);
+      padding-left: 12px;
+      line-height: 1.45;
+    }
 
-.feedback-restart-btn:hover {
-  background: var(--primary);
-  transform: scale(1.06);
-}
+    .feedback-restart-btn {
+      align-self: flex-end;
+      background: #1e293b;
+      color: #ffffff;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
 
-/* Mobile Responsiveness */
-@media (max-width: 820px) {
-  .simulation-wrapper {
-    aspect-ratio: auto;
-    min-height: 600px;
-  }
+    .feedback-restart-btn:hover {
+      background: var(--primary);
+      transform: scale(1.06);
+    }
 
-  .options-grid {
-    grid-template-columns: 1fr;
-    max-height: 80vh;
-    overflow-y: auto;
-    padding-top: 20px;
-  }
+    /* Responsive adjustments */
+    @media (max-width: 820px) {
+      .simulation-wrapper {
+        aspect-ratio: auto;
+        min-height: 600px;
+      }
 
-  .option-card:nth-child(1),
-  .option-card:nth-child(2),
-  .option-card:nth-child(3),
-  .option-card:nth-child(4),
-  .option-card:nth-child(5) {
-    grid-column: span 1;
-  }
+      .options-grid {
+        grid-template-columns: 1fr;
+        max-height: 80vh;
+        overflow-y: auto;
+        padding-top: 20px;
+      }
 
-  #feedback-overlay {
-    padding: 16px;
-    align-items: center;
-    justify-content: center;
-  }
-}
+      .option-card:nth-child(1),
+      .option-card:nth-child(2),
+      .option-card:nth-child(3),
+      .option-card:nth-child(4),
+      .option-card:nth-child(5) {
+        grid-column: span 1;
+      }
 
+      #feedback-overlay {
+        padding: 16px;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
 
-<!-- Initial Play Trigger -->
-<div id="play-overlay" class="play-overlay">
-  <div class="play-button" aria-label="Start simulation">
-    <div class="play-triangle"></div>
+  <div class="simulation-wrapper">
+    <!-- Main scenario video -->
+    <video id="simulation-video" playsinline preload="auto">
+      <source src="complaining_1.mp4" type="video/mp4" />
+      Your browser does not support HTML5 video.
+    </video>
+
+    <!-- Play button overlay -->
+    <div id="play-overlay" class="play-overlay">
+      <div class="play-button" aria-label="Start simulation">
+        <div class="play-triangle"></div>
+      </div>
+    </div>
+
+    <!-- Branching choice options -->
+    <div id="options-overlay" class="overlay-screen">
+      <div class="options-grid">
+        <div class="option-card" onclick="handleChoice('apologetic')">
+          <p>"Oh no... that's terrible. I'm so sorry. I'll check the system right now, please don't be angry, I'm sure we can find out what happened."</p>
+          <div class="option-action">&#10140;</div>
+        </div>
+
+        <div class="option-card" onclick="handleChoice('dismissive')">
+          <p>"I don't handle referrals, that's the admin team. You will need to call back between 2 PM and 4 PM when they are in. I have a queue of patients behind you."</p>
+          <div class="option-action">&#10140;</div>
+        </div>
+
+        <div class="option-card" onclick="handleChoice('overpromising')">
+          <p>"I'll fix this right now. I'll get the manager to call the hospital directly and demand they see you tomorrow. Just give me a second."</p>
+          <div class="option-action">&#10140;</div>
+        </div>
+
+        <div class="option-card" onclick="handleChoice('procedural')">
+          <p>"Mr. Vance, I cannot show you the internal clinical system. If there is a missing referral, I will have to ask the GP to look into it. This can take up to 48 hours."</p>
+          <div class="option-action">&#10140;</div>
+        </div>
+
+        <div class="option-card" onclick="handleChoice('deescalate')">
+          <p>"Mr. Vance, that is incredibly distressing to hear, especially given the nature of the scan. I can't show you the screen due to other patient data, but I am going to investigate this right now while you wait. Can we use the side room so I can get the full details from you?"</p>
+          <div class="option-action">&#10140;</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Consequence feedback box -->
+    <div id="feedback-overlay" class="overlay-screen">
+      <div class="feedback-box">
+        <p class="feedback-narrative" id="narrative-text"></p>
+        <p class="feedback-speech" id="speech-text"></p>
+        <button class="feedback-restart-btn" onclick="restartSimulation()" title="Try again" aria-label="Restart simulation">&#10140;</button>
+      </div>
+    </div>
   </div>
-</div>
 
-<!-- Branching Choice Options Overlay -->
-<div id="options-overlay" class="overlay-screen">
-  <div class="options-grid">
-    <div class="option-card" onclick="handleChoice('apologetic')">
-      <p>"Oh no... that's terrible. I'm so sorry. I'll check the system right now, please don't be angry, I'm sure we can find out what happened."</p>
-      <div class="option-action">&#10140;</div>
-    </div>
+  <script>
+    const video = document.getElementById('simulation-video');
+    const playOverlay = document.getElementById('play-overlay');
+    const optionsOverlay = document.getElementById('options-overlay');
+    const feedbackOverlay = document.getElementById('feedback-overlay');
+    const narrativeText = document.getElementById('narrative-text');
+    const speechText = document.getElementById('speech-text');
 
-    <div class="option-card" onclick="handleChoice('dismissive')">
-      <p>"I don't handle referrals, that's the admin team. You will need to call back between 2 PM and 4 PM when they are in. I have a queue of patients behind you."</p>
-      <div class="option-action">&#10140;</div>
-    </div>
+    const feedbackScenarios = {
+      dismissive: {
+        narrative: "By asking Mr Vance to wait, you have turned a private clinical error into a public ordeal. He is not going to sit down quietly.\n\nHe turns to the waiting room:",
+        speech: '"Did you hear that? They lost my cancer referral and told me to call back this afternoon. Does this happen to you too?"'
+      },
+      apologetic: {
+        narrative: "Apologising defensively and asking an agitated patient 'not to be angry' often invalidates their genuine terror. Mr Vance raises his voice further over the counter:",
+        speech: '"Don\'t tell me not to be angry! Four months of my life wasted! Stop talking and show me that screen!"'
+      },
+      overpromising: {
+        narrative: "Making guarantees you cannot control sets up false expectations and damages practice credibility when the hospital cannot deliver:",
+        speech: '"Tomorrow? You better make sure they do! I am not leaving this reception until I have written confirmation!"'
+      },
+      procedural: {
+        narrative: "Quoting a 48-hour administrative turnaround for an urgent potential cancer referral escalates anxiety into complete outrage:",
+        speech: '"48 hours?! It could be cancer and you\'re asking me to wait two more days for paperwork?!"'
+      },
+      deescalate: {
+        narrative: "You acknowledged the severe distress, maintained data confidentiality without sounding dismissive, and moved the conversation to a private space to remove the audience.",
+        speech: '"Thank you. Let\'s go into the side room. I just need to know what on earth happened to my scan."'
+      }
+    };
 
-    <div class="option-card" onclick="handleChoice('overpromising')">
-      <p>"I'll fix this right now. I'll get the manager to call the hospital directly and demand they see you tomorrow. Just give me a second."</p>
-      <div class="option-action">&#10140;</div>
-    </div>
+    // User clicks the initial play button
+    playOverlay.addEventListener('click', () => {
+      playOverlay.style.display = 'none';
+      video.play().catch(err => {
+        console.error("Playback error:", err);
+      });
+    });
 
-    <div class="option-card" onclick="handleChoice('procedural')">
-      <p>"Mr. Vance, I cannot show you the internal clinical system. If there is a missing referral, I will have to ask the GP to look into it. This can take up to 48 hours."</p>
-      <div class="option-action">&#10140;</div>
-    </div>
+    // When the 9-second clip ends, display the choice cards
+    video.addEventListener('ended', () => {
+      optionsOverlay.classList.add('active');
+    });
 
-    <div class="option-card" onclick="handleChoice('deescalate')">
-      <p>"Mr. Vance, that is incredibly distressing to hear, especially given the nature of the scan. I can't show you the screen due to other patient data, but I am going to investigate this right now while you wait. Can we use the side room so I can get the full details from you?"</p>
-      <div class="option-action">&#10140;</div>
-    </div>
-  </div>
-</div>
+    // Handle choice selection
+    function handleChoice(key) {
+      optionsOverlay.classList.remove('active');
 
-<!-- Feedback / Consequence Overlay -->
-<div id="feedback-overlay" class="overlay-screen">
-  <div class="feedback-box">
-    <p class="feedback-narrative" id="narrative-text"></p>
-    <p class="feedback-speech" id="speech-text"></p>
-    <button class="feedback-restart-btn" onclick="restartSimulation()" title="Try again" aria-label="Restart simulation">&#10140;</button>
-  </div>
-</div>
+      const outcome = feedbackScenarios[key] || feedbackScenarios.dismissive;
+      narrativeText.textContent = outcome.narrative;
+      speechText.textContent = outcome.speech;
+
+      feedbackOverlay.classList.add('active');
+    }
+
+    // Reset simulation
+    function restartSimulation() {
+      feedbackOverlay.classList.remove('active');
+      optionsOverlay.classList.remove('active');
+      video.currentTime = 0;
+      playOverlay.style.display = 'flex';
+    }
+  </script>
+</body>
+</html>
