@@ -226,11 +226,22 @@
       margin-left: 6px;
     }
 
-    @media (max-width: 768px) {
-      .simulation-container {
-        aspect-ratio: auto;
-        min-height: 560px;
-      }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: none;
+      z-index: 20;
+    }
+
+    .overlay.active {
+      display: flex;
+    }
+
+    #options-overlay {
+      background: linear-gradient(to left, rgba(15, 23, 42, 0.7) 0%, rgba(15, 23, 42, 0.1) 60%, transparent 100%);
+      align-items: center; 
+      padding: 24px;
+    }
 
       #options-overlay {
         background: rgba(15, 23, 42, 0.6);
@@ -267,7 +278,7 @@
           <div class="option-arrow">&#10140;</div>
         </div>
 
-        <div class="option-card" onclick="handleChoice('waiting_room')">
+        <div class="option-card" onclick="handleChoice('no_referrals')">
           <p>"I don't handle referrals, that's the admin team. You will need to call back between 2 PM and 4 PM when they are in. I have a queue of patients behind you."</p>
           <div class="option-arrow">&#10140;</div>
         </div>
@@ -306,8 +317,9 @@
     const speechText = document.getElementById('speech-text');
     const fallbackPlayBtn = document.getElementById('autoplay-fallback');
 
+    let currentPhase = 'initial'; // Tracks the current state of the simulation
+
     // Attempt to play the video on load
-    // Browsers often block autoplay if unmuted, so we catch the error
     window.addEventListener('load', () => {
       const playPromise = video.play();
       
@@ -329,32 +341,62 @@
     });
 
     video.addEventListener('ended', () => {
-      optionsOverlay.classList.add('active');
+      if (currentPhase === 'initial') {
+        optionsOverlay.classList.add('active');
+      } else if (currentPhase === 'no_referrals') {
+        // Show feedback after the second video finishes
+        showFeedback(
+          "By asking Mr Vance to call back and mentioning the queue, he feels dismissed and humiliated. He turns to the waiting room to escalate the situation publicly.",
+          '"Did you hear that? They lost my cancer referral and told me to call back this afternoon. Does this happen to you too?"'
+        );
+      }
     });
 
     function handleChoice(outcomeKey) {
       optionsOverlay.classList.remove('active');
 
-      if (outcomeKey === 'waiting_room') {
-        // NOTE: Make sure vance-outburst-bg.jpg is available in the repo if you plan to use this background
-        feedbackOverlay.style.backgroundImage = "url('vance-outburst-bg.jpg')";
-        narrativeText.textContent = "By asking Mr Vance to wait, you have turned a private clinical error into a public ordeal. He is not going to sit down quietly. He turns to the waiting room:";
-        speechText.textContent = '"Did you hear that? They lost my cancer referral and told me to call back this afternoon. Does this happen to you too?"';
+      if (outcomeKey === 'no_referrals') {
+        // Switch to the second video and play it
+        currentPhase = 'no_referrals';
+        video.src = 'do_you_hear_that.mp4';
+        video.load();
+        
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+             console.log("Autoplay blocked for second video. User interaction may be required.");
+             fallbackPlayBtn.classList.add('active'); // Fallback if browser blocks subsequent play
+          });
+        }
+      } else if (outcomeKey === 'waiting_room') {
+        showFeedback(
+          "By asking Mr Vance to wait, you have turned a private clinical error into a public ordeal. He is not going to sit down quietly. He turns to the waiting room:",
+          '"Did you hear that? They lost my cancer referral and told me to call back this afternoon. Does this happen to you too?"'
+        );
       } else {
-        feedbackOverlay.style.backgroundImage = "url('vance-outburst-bg.jpg')";
-        narrativeText.textContent = "You acknowledge the distress immediately, uphold confidentiality without being dismissive, and offer a private room to de-escalate the public confrontation.";
-        speechText.textContent = '"Thank you. Let us get off this counter. I just need to know what on earth happened to my scan."';
+        showFeedback(
+          "You acknowledge the distress immediately, uphold confidentiality without being dismissive, and offer a private room to de-escalate the public confrontation.",
+          '"Thank you. Let us get off this counter. I just need to know what on earth happened to my scan."'
+        );
       }
+    }
 
-      feedbackOverlay.classList.add('active');
+    function showFeedback(narrative, speech) {
+        feedbackOverlay.style.backgroundImage = "url('vance-outburst-bg.jpg')";
+        narrativeText.textContent = narrative;
+        speechText.textContent = speech;
+        feedbackOverlay.classList.add('active');
     }
 
     function resetScenario() {
       feedbackOverlay.classList.remove('active');
       optionsOverlay.classList.remove('active');
+      
+      currentPhase = 'initial';
+      video.src = 'complaining_1.mp4';
+      video.load();
       video.currentTime = 0;
       
-      // Try to autoplay again on restart
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise.catch(error => {
