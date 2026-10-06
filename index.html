@@ -10,7 +10,7 @@
       --primary-dark: #003087;
       --surface: #ffffff;
       --bg: #0f172a;
-      --card-bg: rgba(255, 255, 255, 0.94);
+      --card-bg: rgba(255, 255, 255, 0.95);
       --card-border: #e2e8f0;
       --text: #1e293b;
       --text-muted: #475569;
@@ -66,26 +66,28 @@
       display: flex;
     }
 
+    /* Keep options firmly anchored to the right half */
     #options-overlay {
-      background: linear-gradient(to left, rgba(15, 23, 42, 0.7) 0%, rgba(15, 23, 42, 0.1) 60%, transparent 100%);
+      background: linear-gradient(to left, rgba(15, 23, 42, 0.75) 0%, rgba(15, 23, 42, 0.25) 55%, transparent 100%);
       align-items: center; 
-      padding: 24px;
+      justify-content: flex-end; /* Hard right justification */
+      padding: 24px 32px;
     }
 
     .options-column {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 9px;
       width: 100%;
-      max-width: 520px; 
-      margin-left: auto; /* Pushes the column to the right */
+      max-width: 480px; 
+      margin-left: auto; /* Pushes everything to the right side away from Vance's face */
     }
 
     .option-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 8px;
-      padding: 10px 14px;
+      padding: 11px 15px;
       font-size: 13.5px;
       line-height: 1.4;
       color: var(--text);
@@ -94,9 +96,9 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(6px);
     }
 
     .option-card p {
@@ -107,7 +109,7 @@
     .option-card:hover {
       transform: translateX(-4px); 
       border-color: var(--primary);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
       background: #ffffff;
     }
 
@@ -129,6 +131,7 @@
       background: var(--primary);
     }
 
+    /* Feedback dialog overlay */
     #feedback-overlay {
       background-size: cover;
       background-position: center;
@@ -145,7 +148,7 @@
       padding: 28px;
       max-width: 580px;
       width: 100%;
-      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -185,89 +188,90 @@
       background: var(--primary);
     }
     
-    /* Play button overlay in case autoplay is blocked */
-    #autoplay-fallback {
+    /* Play with audio trigger overlay (Required by browsers for unmuted sound) */
+    #audio-start-overlay {
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(15, 23, 42, 0.65);
       display: none;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       z-index: 30;
       cursor: pointer;
+      gap: 14px;
     }
     
-    #autoplay-fallback.active {
+    #audio-start-overlay.active {
       display: flex;
     }
 
     .play-icon-box {
-      width: 80px;
-      height: 80px;
+      width: 76px;
+      height: 76px;
       border-radius: 50%;
-      background: rgba(0, 0, 0, 0.65);
-      border: 2px solid rgba(255, 255, 255, 0.85);
+      background: var(--primary);
+      border: 3px solid rgba(255, 255, 255, 0.9);
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 0.2s ease;
+      transition: transform 0.2s ease, background 0.2s ease;
+      box-shadow: 0 10px 25px rgba(0, 94, 184, 0.5);
     }
 
-    #autoplay-fallback:hover .play-icon-box {
-      transform: scale(1.08);
+    #audio-start-overlay:hover .play-icon-box {
+      transform: scale(1.1);
+      background: var(--primary-dark);
     }
 
     .play-icon {
       width: 0;
       height: 0;
-      border-top: 14px solid transparent;
-      border-bottom: 14px solid transparent;
-      border-left: 24px solid #ffffff;
-      margin-left: 6px;
+      border-top: 13px solid transparent;
+      border-bottom: 13px solid transparent;
+      border-left: 22px solid #ffffff;
+      margin-left: 5px;
     }
 
-    .overlay {
-      position: absolute;
-      inset: 0;
-      display: none;
-      z-index: 20;
+    .start-prompt-text {
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     }
 
-    .overlay.active {
-      display: flex;
-    }
-
-    #options-overlay {
-      background: linear-gradient(to left, rgba(15, 23, 42, 0.7) 0%, rgba(15, 23, 42, 0.1) 60%, transparent 100%);
-      align-items: center; 
-      padding: 24px;
-    }
-
-      #options-overlay {
-        background: rgba(15, 23, 42, 0.6);
+    @media (max-width: 768px) {
+      .simulation-container {
+        aspect-ratio: auto;
+        min-height: 580px;
       }
-
+      #options-overlay {
+        padding: 16px;
+        background: rgba(15, 23, 42, 0.7);
+      }
       .options-column {
-        margin-left: 0;
-        max-height: 80vh;
+        max-width: 100%;
+        max-height: 82vh;
         overflow-y: auto;
       }
     }
   </style>
 </head>
 <body>
-
   <div class="simulation-container">
-    <video id="scenario-video" playsinline preload="auto" autoplay muted>
+    <!-- Unmuted video element -->
+    <video id="scenario-video" playsinline preload="auto">
       <source src="complaining_1.mp4" type="video/mp4" />
       Your browser does not support HTML5 video.
     </video>
 
-    <!-- Fallback play button if autoplay is blocked by the browser -->
-    <div id="autoplay-fallback" aria-label="Play Video">
+    <!-- Overlay ensuring user-gesture initiates unmuted audio cleanly -->
+    <div id="audio-start-overlay" class="active" aria-label="Start Simulation with Audio">
       <div class="play-icon-box">
         <div class="play-icon"></div>
       </div>
+      <div class="start-prompt-text">Click anywhere to start with sound</div>
     </div>
 
     <!-- Right-aligned options menu -->
@@ -300,6 +304,7 @@
       </div>
     </div>
 
+    <!-- Feedback outcome overlay -->
     <div id="feedback-overlay" class="overlay">
       <div class="feedback-dialog">
         <p class="feedback-narrative" id="narrative-text"></p>
@@ -315,36 +320,38 @@
     const feedbackOverlay = document.getElementById('feedback-overlay');
     const narrativeText = document.getElementById('narrative-text');
     const speechText = document.getElementById('speech-text');
-    const fallbackPlayBtn = document.getElementById('autoplay-fallback');
+    const audioStartOverlay = document.getElementById('audio-start-overlay');
 
-    let currentPhase = 'initial'; // Tracks the current state of the simulation
+    let currentPhase = 'initial';
 
-    // Attempt to play the video on load
+    // Ensure audio is enabled
+    video.muted = false;
+
+    // Start video unmuted with sound
+    function startVideoWithAudio() {
+      video.muted = false;
+      video.play().then(() => {
+        audioStartOverlay.classList.remove('active');
+      }).catch(err => {
+        console.warn("Autoplay with audio blocked by browser policy:", err);
+        audioStartOverlay.classList.add('active');
+      });
+    }
+
+    // Try auto-play immediately on load; if browser policy blocks unmuted audio, the start overlay is ready
     window.addEventListener('load', () => {
-      const playPromise = video.play();
-      
-      if (playPromise !== undefined) {
-        playPromise.then(_ => {
-          // Autoplay started successfully
-        }).catch(error => {
-          // Autoplay was prevented by the browser. Show fallback play button.
-          console.log("Autoplay blocked. Showing play button.");
-          fallbackPlayBtn.classList.add('active');
-        });
-      }
+      startVideoWithAudio();
     });
 
-    // Handle manual play if autoplay failed
-    fallbackPlayBtn.addEventListener('click', () => {
-      video.play();
-      fallbackPlayBtn.classList.remove('active');
+    // Clicking anywhere on the start overlay begins unmuted playback immediately
+    audioStartOverlay.addEventListener('click', () => {
+      startVideoWithAudio();
     });
 
     video.addEventListener('ended', () => {
       if (currentPhase === 'initial') {
         optionsOverlay.classList.add('active');
       } else if (currentPhase === 'no_referrals') {
-        // Show feedback after the second video finishes
         showFeedback(
           "By asking Mr Vance to call back and mentioning the queue, he feels dismissed and humiliated. He turns to the waiting room to escalate the situation publicly.",
           '"Did you hear that? They lost my cancer referral and told me to call back this afternoon. Does this happen to you too?"'
@@ -356,18 +363,15 @@
       optionsOverlay.classList.remove('active');
 
       if (outcomeKey === 'no_referrals') {
-        // Switch to the second video and play it
         currentPhase = 'no_referrals';
         video.src = 'do_you_hear_that.mp4';
+        video.muted = false;
         video.load();
         
-        const playPromise = video.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(error => {
-             console.log("Autoplay blocked for second video. User interaction may be required.");
-             fallbackPlayBtn.classList.add('active'); // Fallback if browser blocks subsequent play
-          });
-        }
+        video.play().catch(error => {
+          console.warn("Interaction needed for branching video:", error);
+          audioStartOverlay.classList.add('active');
+        });
       } else if (outcomeKey === 'waiting_room') {
         showFeedback(
           "By asking Mr Vance to wait, you have turned a private clinical error into a public ordeal. He is not going to sit down quietly. He turns to the waiting room:",
@@ -382,10 +386,10 @@
     }
 
     function showFeedback(narrative, speech) {
-        feedbackOverlay.style.backgroundImage = "url('vance-outburst-bg.jpg')";
-        narrativeText.textContent = narrative;
-        speechText.textContent = speech;
-        feedbackOverlay.classList.add('active');
+      feedbackOverlay.style.backgroundImage = "url('vance-outburst-bg.jpg')";
+      narrativeText.textContent = narrative;
+      speechText.textContent = speech;
+      feedbackOverlay.classList.add('active');
     }
 
     function resetScenario() {
@@ -394,15 +398,13 @@
       
       currentPhase = 'initial';
       video.src = 'complaining_1.mp4';
+      video.muted = false;
       video.load();
       video.currentTime = 0;
       
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-           fallbackPlayBtn.classList.add('active');
-        });
-      }
+      video.play().catch(error => {
+        audioStartOverlay.classList.add('active');
+      });
     }
   </script>
 </body>
